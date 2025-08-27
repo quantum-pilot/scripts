@@ -1,0 +1,2 @@
+- `receipts.py`: Simple cron-based receipt printer for enforcing consistency in routine (runs every `POLL_MINS` reading `CRON_YAML_PATH` and printing receipts for tasks at configured cron entries)
+- `webp.py`: Walks through the given directory, attempts to convert images to WEBP format and retains whichever is smaller in size.
