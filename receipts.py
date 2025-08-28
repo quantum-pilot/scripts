@@ -60,7 +60,7 @@ TOP_PAD  = 24
 BOT_PAD  = 24
 
 
-def create_msg(msg: str):
+def print_msg(msg: str):
     today = datetime.now().strftime('%Y-%m-%d')
     msg = (
         ESC + b'@'                          # reset
@@ -153,8 +153,8 @@ def main():
                 continue
 
             if last_dt is None or last_dt < prev:
-                create_msg(name)
-                job["last"] = prev.isoformat()
+                print_msg(name)
+                job["last"] = now.isoformat()
 
 
 if __name__ == "__main__":
