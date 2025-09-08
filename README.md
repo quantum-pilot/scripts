@@ -1,3 +1,3 @@
-- `hn-comment-scraper.py`: Simple BeautifulSoup-based scraper for fetching top N comments with top N replies for a given post.
+- `hn-summary.py`: Tiny script for summarizing top 20 posts in HN + comments (scheduled in cron on daily basis) and uploading it to OpenWebUI.
 - `receipts.py`: Simple cron-based receipt printer for enforcing consistency in routine (runs every `POLL_MINS` reading `CRON_YAML_PATH` and printing receipts for tasks at configured cron entries)
 - `webp.py`: Walks through the given directory, attempts to convert images to WEBP format and retains whichever is smaller in size.
