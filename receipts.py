@@ -1,10 +1,7 @@
 # /// script
 # dependencies = [
 #   "cronsim",
-#   "libusb",
-#   "libusb-package",
-#   "PyYAML",
-#   "pyusb",
+#   "pywin32",
 # ]
 # ///
 
@@ -13,8 +10,8 @@ from pathlib import Path
 from contextlib import contextmanager
 from datetime import datetime, timezone
 
+import win32print
 import yaml
-import libusb_package, usb.util
 from cronsim import CronSim
 
 
@@ -40,24 +37,11 @@ CANDIDATE_FILES = ("schedule.yaml", "cron.yaml")
 
 """
 
-# Init printer
-backend = libusb_package.get_libusb1_backend()
-dev = usb.core.find(idVendor=0x0471, idProduct=0x0055, backend=backend)
-assert dev is not None, "Printer not found"
-dev.set_configuration()
-cfg = dev.get_active_configuration()
-intf = cfg[(0, 0)]
-ep_out = usb.util.find_descriptor(
-    intf,
-    custom_match=lambda e: usb.util.endpoint_direction(e.bEndpointAddress)
-                        == usb.util.ENDPOINT_OUT)
-assert ep_out is not None, "OUT endpoint not found"
-
-
 ESC = b'\x1b'
 GS  = b'\x1d'
 TOP_PAD  = 24
 BOT_PAD  = 24
+PRINTER = "Generic / Text Only"  # Printer name as recognized by Windows
 
 
 def print_msg(msg: str):
@@ -70,7 +54,17 @@ def print_msg(msg: str):
     + ESC + b'J' + bytes([BOT_PAD])         # bottom padding
     + GS  + b'V' + b'\x42' + b'\x00'        # partial cut, no feed
     )
-    ep_out.write(msg)
+    h = win32print.OpenPrinter(PRINTER)
+    try:
+        job = win32print.StartDocPrinter(h, 1, ("Receipt", None, "RAW"))
+        try:
+            win32print.StartPagePrinter(h)
+            win32print.WritePrinter(h, msg)
+            win32print.EndPagePrinter(h)
+        finally:
+            win32print.EndDocPrinter(h)
+    finally:
+        win32print.ClosePrinter(h)
 
 
 def parse_iso(val):
